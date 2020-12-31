@@ -1,0 +1,134 @@
+ #!/bin/bash
+bold=`echo -en "\e[1m"`
+underline=`echo -en "\e[4m"`
+dim=`echo -en "\e[2m"`
+strickthrough=`echo -en "\e[9m"`
+blink=`echo -en "\e[5m"`
+reverse=`echo -en "\e[7m"`
+hidden=`echo -en "\e[8m"`
+normal=`echo -en "\e[0m"`
+black=`echo -en "\e[30m"`
+red=`echo -en "\e[31m"`
+green=`echo -en "\e[32m"`
+orange=`echo -en "\e[33m"`
+blue=`echo -en "\e[34m"`
+purple=`echo -en "\e[35m"`
+aqua=`echo -en "\e[36m"`
+gray=`echo -en "\e[37m"`
+darkgray=`echo -en "\e[90m"`
+lightred=`echo -en "\e[91m"`
+lightgreen=`echo -en "\e[92m"`
+lightyellow=`echo -en "\e[93m"`
+lightblue=`echo -en "\e[94m"`
+lightpurple=`echo -en "\e[95m"`
+lightaqua=`echo -en "\e[96m"`
+white=`echo -en "\e[97m"`
+default=`echo -en "\e[39m"`
+BLACK=`echo -en "\e[40m"`
+RED=`echo -en "\e[41m"`
+GREEN=`echo -en "\e[42m"`
+ORANGE=`echo -en "\e[43m"`
+BLUE=`echo -en "\e[44m"`
+PURPLE=`echo -en "\e[45m"`
+AQUA=`echo -en "\e[46m"`
+GRAY=`echo -en "\e[47m"`
+DARKGRAY=`echo -en "\e[100m"`
+LIGHTRED=`echo -en "\e[101m"`
+LIGHTGREEN=`echo -en "\e[102m"`
+LIGHTYELLOW=`echo -en "\e[103m"`
+LIGHTBLUE=`echo -en "\e[104m"`
+LIGHTPURPLE=`echo -en "\e[105m"`
+LIGHTAQUA=`echo -en "\e[106m"`
+WHITE=`echo -en "\e[107m"`
+DEFAULT=`echo -en "\e[49m"`
+clear
+echo "${bold}${underline}Debian 11 unstable KDE - postinstall script$normal"
+
+
+echo "${red}first u need to add ur user to sudoers file and then start this script again:"
+echo "su -"
+echo "visudo"
+echo "then add ur user like the root user $normal"
+
+
+## update and install stuff ####################################################
+echo -n "${green}update and install software (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+
+  #sudo wget -qO - https://packagecloud.io/AtomEditor/atom/gpgkey | sudo apt-key add - #Add atom repository
+  #sudo sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
+
+  sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
+  software=$(sudo apt -qq install keepass2 thunderbird obs-studio gimp ufw gufw steam krita blender golang baobab webext-ublock-origin -y 2> /dev/null)
+  echo "${software##*$'\n'}"
+  
+  echo "you can install goland manually from here:"
+  echo "https://www.jetbrains.com/de-de/go/download/download-thanks.html?platform=linux"
+  
+fi
+
+## Themeing ####################################################################
+echo -n "${green}Set Theming stuff (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    echo "todo: MystixTheme"
+fi
+
+## privacy settings ############################################################
+echo -n "${green}Set privacy settings (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    echo "todo"
+fi
+
+## blank screen & standby never ################################################
+echo -n "${green}Set blank screen and standby to never (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    echo "todo"
+fi
+
+## Install QEMU/KVM ############################################################
+echo -n "${green}Install QEMU/KVM(y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+  if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) > 0 ]];then
+    echo "kvm supported and enabled in bios"
+    #install virtual environment
+    sudo apt -qq install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
+    sudo gpasswd -a master kvm
+    #todo Add virt manager to panel
+  else
+    echo "${red}kvm not supported or not enabled in bios$normal"
+  fi
+fi
+
+## Create network bridge for QEMU£/KVM #########################################
+echo -n "${green}create network bridge for QEMU/KVM(y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+
+  ip link show
+  read -p "${green}Enter Network Interface with Internet access ( enp4s0 ): $normal" iface
+  
+  #network bridge
+  sudo brctl addbr br0
+  sudo ip link set $iface down
+  sudo ip link set $iface up
+  sudo brctl addif br0 $iface
+  sudo dhclient br0
+fi
+
+lsb_release -s -d
+
+echo -n "${green}Done... ${red}Reboot now (y/n) $normal?"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+  shutdown -r now
+fi
+## TODO: #######################################################################
+# theme, privacy and settings stuff
+# firefox theme
+# firefox settings
+
