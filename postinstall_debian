@@ -60,7 +60,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
   #sudo sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
 
   sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
-  software=$(sudo apt -qq install keepass2 thunderbird obs-studio gimp ufw gufw steam krita blender golang baobab webext-ublock-origin -y 2> /dev/null)
+  software=$(sudo apt -qq install keepass2 thunderbird obs-studio gimp ufw gufw krita blender golang baobab webext-ublock-origin -y 2> /dev/null)
   echo "${software##*$'\n'}"
   
   echo "you can install goland manually from here:"
