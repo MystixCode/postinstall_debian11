@@ -1,100 +1,157 @@
- #!/bin/bash
+#!/bin/bash
+
 bold=`echo -en "\e[1m"`
-underline=`echo -en "\e[4m"`
-dim=`echo -en "\e[2m"`
-strickthrough=`echo -en "\e[9m"`
-blink=`echo -en "\e[5m"`
-reverse=`echo -en "\e[7m"`
-hidden=`echo -en "\e[8m"`
-normal=`echo -en "\e[0m"`
-black=`echo -en "\e[30m"`
+purple=`echo -en "\e[35m"`
+orange=`echo -en "\e[33m"`
 red=`echo -en "\e[31m"`
 green=`echo -en "\e[32m"`
-orange=`echo -en "\e[33m"`
-blue=`echo -en "\e[34m"`
-purple=`echo -en "\e[35m"`
-aqua=`echo -en "\e[36m"`
-gray=`echo -en "\e[37m"`
-darkgray=`echo -en "\e[90m"`
-lightred=`echo -en "\e[91m"`
-lightgreen=`echo -en "\e[92m"`
-lightyellow=`echo -en "\e[93m"`
 lightblue=`echo -en "\e[94m"`
-lightpurple=`echo -en "\e[95m"`
-lightaqua=`echo -en "\e[96m"`
-white=`echo -en "\e[97m"`
-default=`echo -en "\e[39m"`
-BLACK=`echo -en "\e[40m"`
-RED=`echo -en "\e[41m"`
-GREEN=`echo -en "\e[42m"`
-ORANGE=`echo -en "\e[43m"`
-BLUE=`echo -en "\e[44m"`
-PURPLE=`echo -en "\e[45m"`
-AQUA=`echo -en "\e[46m"`
-GRAY=`echo -en "\e[47m"`
-DARKGRAY=`echo -en "\e[100m"`
-LIGHTRED=`echo -en "\e[101m"`
-LIGHTGREEN=`echo -en "\e[102m"`
-LIGHTYELLOW=`echo -en "\e[103m"`
-LIGHTBLUE=`echo -en "\e[104m"`
-LIGHTPURPLE=`echo -en "\e[105m"`
-LIGHTAQUA=`echo -en "\e[106m"`
-WHITE=`echo -en "\e[107m"`
-DEFAULT=`echo -en "\e[49m"`
-clear
-echo "${bold}${underline}Debian 11 unstable KDE - postinstall script$normal"
+underline=`echo -en "\e[4m"`
+normal=`echo -en "\e[0m"`
 
+isRoot() {
+  if [ "$EUID" -ne 0 ] ; then
+    false
+  else
+    true
+  fi
+}
 
-echo "${red}first u need to add ur user to sudoers file and then start this script again:"
-echo "su -"
-echo "visudo"
-echo "then add ur user like the root user $normal"
+installSudo() {
+    #TODO only if sudo not already installed an current user not in sudoers file or maybe with tee arguments somehow??
+    if  which sudo = ''  ; then
+        echo "${purple}installing sudo$normal"
+        su -c "apt install sudo ; echo 'master ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
+    else
+        echo "sudo already installed"
+    fi
+}
 
+lookAndFeel() {
+    lookandfeeltool -a "$1"
+}
 
-## update and install stuff ####################################################
-echo -n "${green}update and install software (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
+plasmaTheme() {
+    kwriteconfig5 --file ~/.config/plasmarc --group Theme --key name "$1"
+}
 
-  #sudo wget -qO - https://packagecloud.io/AtomEditor/atom/gpgkey | sudo apt-key add - #Add atom repository
-  #sudo sh -c 'echo "deb [arch=amd64] https://packagecloud.io/AtomEditor/atom/any/ any main" > /etc/apt/sources.list.d/atom.list'
+applicationStyleEdit() {
+    kwriteconfig5 --file ~/.config/kdeglobals --group KDE --key widgetStyle "$1"
+}
 
-  sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
-  software=$(sudo apt -qq install keepass2 thunderbird obs-studio gimp ufw gufw krita blender golang baobab webext-ublock-origin -y 2> /dev/null)
-  echo "${software##*$'\n'}"
-  
-  echo "you can install goland manually from here:"
-  echo "https://www.jetbrains.com/de-de/go/download/download-thanks.html?platform=linux"
-  
-fi
+windowDecoration() {
+    kwriteconfig5 --file ~/.config/kwinrc --group org.kde.kdecoration2 --key library "$1"
+    kwriteconfig5 --file ~/.config/kwinrc --group org.kde.kdecoration2 --key theme "$2"
+}
 
-## Themeing ####################################################################
-echo -n "${green}Set Theming stuff (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    echo "todo: MystixTheme"
-fi
+gtkTheme() {
+    kwriteconfig5 --file ~/.config/gtk-3.0/settings.ini --group Settings --key gtk-theme-name "$1"
+}
 
-## privacy settings ############################################################
-echo -n "${green}Set privacy settings (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    echo "todo"
-fi
+colorScheme() {
+    kwriteconfig5 --file ~/.config/kdeglobals --group General --key ColorScheme "$1"
+}
 
-## blank screen & standby never ################################################
-echo -n "${green}Set blank screen and standby to never (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    echo "todo"
-fi
+icons() {
+    kwriteconfig5 --file ~/.config/kdeglobals --group Icons --key Theme "$1"
+}
 
-## Install QEMU/KVM ############################################################
-echo -n "${green}Install QEMU/KVM(y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
+changeWallpaper(){
+	echo Select Wallpaper:
+    wallpaper=$(zenity --file-selection)
+    echo $wallpaper
+	dbus-send --session --dest=org.kde.plasmashell --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string: 
+		var Desktops = desktops(); 
+			for (i=0;i<Desktops.length;i++){	
+				d = Desktops[i]; d.wallpaperPlugin = "org.kde.image"; 
+				d.currentConfigGroup = Array("Wallpaper","org.kde.image","General"); 
+				d.writeConfig("Image","file://'$wallpaper'");
+			}'
+}
+
+cursor() {
+    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key cursorTheme "$1"
+}
+
+gtkCursor() {
+    kwriteconfig5 --file ~/.config/gtk-3.0/settings.ini --group Settings --key gtk-cursor-theme-name "$1"
+}
+
+splashScreen() {
+    kwriteconfig5 --file ~/.config/ksplashrc --group KSplash --key Theme "$1"
+}
+
+restartUI() {
+    qdbus org.kde.KWin /KWin reconfigure
+    kquitapp5 plasmashell && kstart5 plasmashell
+}
+
+changeGlobalTheme() {
+    lookAndFeel "org.kde.breezedark.desktop"
+    plasmaTheme "breeze-dark"
+    applicationStyleEdit "Breeze"
+    windowDecoration "org.kde.breeze" "Breeze"
+    gtkTheme "Breeze"
+    colorScheme "BreezeDark"
+    icons "breeze-dark"
+    cursor "breeze_cursors"
+    gtkCursor "breeze_cursors"
+    splashScreen "org.kde.breeze.desktop"
+    restartUI
+}
+
+disableMouseAcceleration() {
+    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptAccelProfileFlat true
+    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptPointerAcceleration 1
+}
+
+configDolphin() {
+    #TODO show all files.
+    kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPath true
+    kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPathInTitlebar true
+    kwriteconfig5 --file ~/.config/dolphinrc --group Search --key Location Everywhere
+}
+
+disableWifi() {
+    nmcli radio all off
+}
+
+disableBluetooth() {
+    sudo systemctl stop bluetooth.service
+}
+
+updateSystem() {
+    sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
+}
+
+installFirewall() {
+    sudo apt -qq install ufw gufw -y
+    sudo ufw enable
+}
+
+installKDEPlasmaMinimal() {
+    sudo apt -qq install kde-plasma-desktop plasma-nm -y
+}
+
+installSteam() {
+    sudo dpkg --add-architecture i386
+    sudo apt -qq update
+    sudo apt -qq install steam -y
+}
+
+installGraphicSoftware() {
+    sudo apt -qq install gimp krita blender -y
+}
+
+installGo() {
+    sudo apt -qq install golang -y
+    echo "${orange}you can install goland manually from here:$normal"
+    echo "${lightblue}${underline}https://www.jetbrains.com/de-de/go/download/download-thanks.html?platform=linux$normal"
+}
+
+installQemuKVM() {
   if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) > 0 ]];then
-    echo "kvm supported and enabled in bios"
+    echo "${green}kvm supported and enabled in bios$normal"
     #install virtual environment
     sudo apt -qq install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
     sudo gpasswd -a master kvm
@@ -102,13 +159,9 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
   else
     echo "${red}kvm not supported or not enabled in bios$normal"
   fi
-fi
+}
 
-## Create network bridge for QEMU£/KVM #########################################
-echo -n "${green}create network bridge for QEMU/KVM(y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-
+createBridge() {
   ip link show
   read -p "${green}Enter Network Interface with Internet access ( enp4s0 ): $normal" iface
   
@@ -118,17 +171,135 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
   sudo ip link set $iface up
   sudo brctl addif br0 $iface
   sudo dhclient br0
+}
+
+installMoreSoftware() {
+    #install kde-plasma minimal and software that i want(maybe ksysguar and kde partitionmanager und gwenview und libreoffice writer)
+    sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular -y
+}
+
+#removeSoftware() {
+#    sudo apt -qq remove kactivitymanagerd -y
+#}
+
+###########################################################################
+## MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN ##
+###########################################################################
+
+echo "${bold}${purple}##########################################$normal"
+echo "${bold}${purple}## Debian 11 minimal postinstall script ##$normal"
+echo "${bold}${purple}##########################################$normal"
+
+if isRoot
+    then
+        echo "${orange}Dont run this script as root, run as the user whose environment u want to change.$normal"
+        exit
 fi
-
+################################################################################################
+installSudo
+################################################################################################
+echo -n "${purple}Update system (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    updateSystem
+fi
+################################################################################################
+echo -n "${purple}Install firewall (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installFirewall
+fi
+#################################################################################################
+echo -n "${purple}Install KDE-plasma minimal (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installKDEPlasmaMinimal
+fi
+################################################################################################
+echo -n "${purple}Install steam (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installSteam
+fi
+################################################################################################
+echo -n "${purple}Install graphic software (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installGraphicSoftware
+fi
+################################################################################################
+echo -n "${purple}Install golang (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installGo
+fi
+################################################################################################
+echo -n "${purple}Install qemu/kvm (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installQemuKVM
+fi
+################################################################################################
+echo -n "${purple}Create network bridge for qemu/kvm (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    createBridge
+fi
+################################################################################################
+echo -n "${purple}Install more software (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installMoreSoftware
+fi
+################################################################################################
+echo -n "${purple}Change wallpaper (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    changeWallpaper
+fi
+################################################################################################
+echo -n "${purple}Change global theme (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    changeGlobalTheme
+fi
+################################################################################################
+echo -n "${purple}Disable mouse acceleration (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    disableMouseAcceleration
+fi
+################################################################################################
+echo -n "${purple}Configure dolphin (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+   configDolphin
+fi
+################################################################################################
+echo -n "${purple}Disable wifi (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    disableWifi
+fi
+################################################################################################
+echo -n "${purple}Disable bluetooth (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    disableBluetooth
+fi
+################################################################################################
 lsb_release -s -d
-
 echo -n "${green}Done... ${red}Reboot now (y/n) $normal?"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
   shutdown -r now
 fi
-## TODO: #######################################################################
-# theme, privacy and settings stuff
-# firefox theme
-# firefox settings
 
+#TODO question choose theme by number (default BreezeDark)
+#TODO monitor to max hertz
+#TODO pin software to panel
+#TODO doppelklick zum öffnen
+#TODO unter Starten und Beenden:
+#           Startbildschirm - keiner
+#           Anmeldebildschirm (SDDM) - hintergrundbild anpassen
+#TODO firefox config
