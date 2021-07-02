@@ -12,6 +12,7 @@ cd git
 git clone https://github.com/MystixCode/postinstall_debian11.git
 cd postinstall_debian11/
 chmod a+x postinstall_debian
+./postinstall_debian
 ```
 
 ### All Options
