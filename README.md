@@ -2,8 +2,8 @@
 A bash script to use on a fresh installed debian11 minimal to install and configure some software
 
 ### HowTo
-First Install a debian 11 minimal. Do not select destop environment during install (everything unselected there).
-Then download and execute like this:
+First install a debian 11 minimal. Do not select any desktop environment during install (everything unselected there).
+Then download and execute this script:
 
 ```bash
 cd
