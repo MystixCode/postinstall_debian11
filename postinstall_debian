@@ -18,7 +18,6 @@ isRoot() {
 }
 
 installSudo() {
-    #TODO only if sudo not already installed an current user not in sudoers file or maybe with tee arguments somehow??
     if  which sudo = ''  ; then
         echo "${purple}installing sudo$normal"
         su -c "apt install sudo ; echo 'master ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
@@ -298,7 +297,7 @@ fi
 #TODO question choose theme by number (default BreezeDark)
 #TODO monitor to max hertz
 #TODO pin software to panel
-#TODO doppelklick zum öffnen
+#TODO doubleclick to open dir
 #TODO unter Starten und Beenden:
 #           Startbildschirm - keiner
 #           Anmeldebildschirm (SDDM) - hintergrundbild anpassen
