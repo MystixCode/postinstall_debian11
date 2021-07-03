@@ -26,6 +26,80 @@ installSudo() {
     fi
 }
 
+updateSystem() {
+    sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
+}
+
+installFirmware() {
+	blkid -o device
+	
+	read -p "${green}Enter USB device with firmware to mount (sda2): $normal" device
+	
+	sudo mkdir /media/usb/
+	sudo mount /dev/$device /media/usb
+	cd /media/usb
+	sudo dpkg -i firmware-amd-graphics_20210315-2_all.deb libgl1-mesa-dri_20.3.4-1_amd64.deb libglx-mesa0_20.3.4-1_amd64.deb mesa-vulkan-drivers_20.3.4-1_amd64.deb
+	sudo apt --fix-broken install
+}
+
+installKDEPlasmaMinimal() {
+    sudo apt -qq install kde-plasma-desktop plasma-nm -y
+}
+
+installFirewall() {
+    sudo apt -qq install ufw gufw -y
+    sudo ufw enable
+}
+
+installSteam() {
+    sudo dpkg --add-architecture i386
+    sudo apt -qq update
+    sudo apt -qq install steam -y
+}
+
+installGraphicSoftware() {
+    sudo apt -qq install gimp krita blender -y
+}
+
+installGo() {
+    sudo apt -qq install golang -y
+    echo "${orange}you can install goland manually from here:$normal"
+    echo "${lightblue}${underline}https://www.jetbrains.com/de-de/go/download/download-thanks.html?platform=linux$normal"
+}
+
+installQemuKVM() {
+  if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) > 0 ]];then
+    echo "${green}kvm supported and enabled in bios$normal"
+    #install virtual environment
+    sudo apt -qq install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
+    sudo gpasswd -a master kvm
+    #todo Add virt manager to panel
+  else
+    echo "${red}kvm not supported or not enabled in bios$normal"
+  fi
+}
+
+createBridge() {
+  ip link show
+  read -p "${green}Enter Network Interface with Internet access ( enp4s0 ): $normal" iface
+  
+  #network bridge
+  sudo brctl addbr br0
+  sudo ip link set $iface down
+  sudo ip link set $iface up
+  sudo brctl addif br0 $iface
+  sudo dhclient br0
+}
+
+installMoreSoftware() {
+    #install kde-plasma minimal and software that i want(maybe ksysguar and kde partitionmanager und gwenview und libreoffice writer)
+    sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular -y
+}
+
+#removeSoftware() {
+#    sudo apt -qq remove kactivitymanagerd -y
+#}
+
 lookAndFeel() {
     lookandfeeltool -a "$1"
 }
@@ -119,68 +193,6 @@ disableBluetooth() {
     sudo systemctl stop bluetooth.service
 }
 
-updateSystem() {
-    sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
-}
-
-installFirewall() {
-    sudo apt -qq install ufw gufw -y
-    sudo ufw enable
-}
-
-installKDEPlasmaMinimal() {
-    sudo apt -qq install kde-plasma-desktop plasma-nm -y
-}
-
-installSteam() {
-    sudo dpkg --add-architecture i386
-    sudo apt -qq update
-    sudo apt -qq install steam -y
-}
-
-installGraphicSoftware() {
-    sudo apt -qq install gimp krita blender -y
-}
-
-installGo() {
-    sudo apt -qq install golang -y
-    echo "${orange}you can install goland manually from here:$normal"
-    echo "${lightblue}${underline}https://www.jetbrains.com/de-de/go/download/download-thanks.html?platform=linux$normal"
-}
-
-installQemuKVM() {
-  if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) > 0 ]];then
-    echo "${green}kvm supported and enabled in bios$normal"
-    #install virtual environment
-    sudo apt -qq install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
-    sudo gpasswd -a master kvm
-    #todo Add virt manager to panel
-  else
-    echo "${red}kvm not supported or not enabled in bios$normal"
-  fi
-}
-
-createBridge() {
-  ip link show
-  read -p "${green}Enter Network Interface with Internet access ( enp4s0 ): $normal" iface
-  
-  #network bridge
-  sudo brctl addbr br0
-  sudo ip link set $iface down
-  sudo ip link set $iface up
-  sudo brctl addif br0 $iface
-  sudo dhclient br0
-}
-
-installMoreSoftware() {
-    #install kde-plasma minimal and software that i want(maybe ksysguar and kde partitionmanager und gwenview und libreoffice writer)
-    sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular -y
-}
-
-#removeSoftware() {
-#    sudo apt -qq remove kactivitymanagerd -y
-#}
-
 ###########################################################################
 ## MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN ##
 ###########################################################################
@@ -203,16 +215,28 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     updateSystem
 fi
 ################################################################################################
-echo -n "${purple}Install firewall (y/n)? $normal"
+echo -n "${purple}Install amdgpu firmware (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installFirewall
+    installFirmware
 fi
 #################################################################################################
 echo -n "${purple}Install KDE-plasma minimal (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     installKDEPlasmaMinimal
+fi
+#################################################################################################
+echo -n "${red}Reboot now to start new installed kde / firmware (y/n) $normal?"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+  shutdown -r now
+fi
+################################################################################################
+echo -n "${purple}Install firewall (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installFirewall
 fi
 ################################################################################################
 echo -n "${purple}Install steam (y/n)? $normal"
@@ -288,11 +312,8 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
 fi
 ################################################################################################
 lsb_release -s -d
-echo -n "${green}Done... ${red}Reboot now (y/n) $normal?"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-  shutdown -r now
-fi
+echo "${green}Done... $normal"
+
 
 #TODO question choose theme by number (default BreezeDark)
 #TODO monitor to max hertz
