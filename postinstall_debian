@@ -18,11 +18,11 @@ isRoot() {
 }
 
 installSudo() {
-    if  which sudo = ''  ; then
-        echo "${purple}installing sudo$normal"
-        su -c "apt install sudo ; echo 'master ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
+    if hash sudo 2>/dev/null; then
+	echo "sudo already installed"
     else
-        echo "sudo already installed"
+	echo "${purple}installing sudo$normal"
+        su -c "apt install sudo ; echo 'master ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
     fi
 }
 
