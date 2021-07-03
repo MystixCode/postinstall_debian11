@@ -31,9 +31,14 @@ updateSystem() {
 }
 
 installFirmware() {
-	cd /media/usb/firmware/
-	sudo dpkg -i firmware-amd-graphics_20210315-2_all.deb libgl1-mesa-dri_20.3.4-1_amd64.deb libglx-mesa0_20.3.4-1_amd64.deb mesa-vulkan-drivers_20.3.4-1_amd64.deb
-	sudo apt --fix-broken install
+
+    sudo apt-get install firmware-amd-graphics libgl1-mesa-dri libglx-mesa0 mesa-vulkan-drivers xserver-xorg-video-all
+    sudo dpkg --add-architecture i386 && sudo apt update
+    sudo apt install libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
+
+#    cd /media/usb/firmware/
+#    sudo dpkg -i firmware-amd-graphics_20210315-2_all.deb libgl1-mesa-dri_20.3.4-1_amd64.deb libglx-mesa0_20.3.4-1_amd64.deb mesa-vulkan-drivers_20.3.4-1_amd64.deb
+#    sudo apt --fix-broken install
 }
 
 installKDEPlasmaMinimal() {
