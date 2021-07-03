@@ -4,7 +4,7 @@ Script and files to install debian 11 minimal with firmware and some software an
 ### HowTo
 
  1. Take 2 usb sticks
- 2. Copy this repo unzipped to usb stick 1
+ 2. Copy this repos content unzipped to usb stick 1
  3. Write debian 11 iso to usb stick 2:
  - https://www.balena.io/etcher/
  - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/bullseye_di_rc2+nonfree/amd64/iso-cd/
