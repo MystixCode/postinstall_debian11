@@ -7,6 +7,9 @@ https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/
 Then download and execute this script:
 
 ```bash
+su -
+apt install git -y
+exit
 cd
 mkdir git
 cd git
