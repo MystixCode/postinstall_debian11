@@ -1,5 +1,5 @@
 # postinstall_debian11
-A bash script to use on a fresh installed debian11 minimal to install and configure some software
+Script and files to install debian 11 minimal with firmware and some software and configs
 
 ### HowTo
 
