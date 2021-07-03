@@ -126,6 +126,7 @@ icons() {
 }
 
 changeWallpaper(){
+	#TODO: wget wallpaper from repo
 	echo Select Wallpaper:
     wallpaper=$(zenity --file-selection)
     echo $wallpaper
@@ -313,9 +314,7 @@ echo "${green}Done... $normal"
 
 #TODO question choose theme by number (default BreezeDark)
 #TODO monitor to max hertz
-#TODO pin software to panel
-#TODO doubleclick to open dir
-#TODO unter Starten und Beenden:
-#           Startbildschirm - keiner
-#           Anmeldebildschirm (SDDM) - hintergrundbild anpassen
+#TODO pin fav software to panel
+#TODO doubleclick to open dir in dolphin
+#TODO sddm wallpaper and theme
 #TODO firefox config
