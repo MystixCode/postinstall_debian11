@@ -31,13 +31,7 @@ updateSystem() {
 }
 
 installFirmware() {
-	blkid -o device
-	
-	read -p "${green}Enter USB device with firmware to mount (sda2): $normal" device
-	
-	sudo mkdir /media/usb/
-	sudo mount /dev/$device /media/usb
-	cd /media/usb
+	cd /media/usb/firmware/
 	sudo dpkg -i firmware-amd-graphics_20210315-2_all.deb libgl1-mesa-dri_20.3.4-1_amd64.deb libglx-mesa0_20.3.4-1_amd64.deb mesa-vulkan-drivers_20.3.4-1_amd64.deb
 	sudo apt --fix-broken install
 }
