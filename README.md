@@ -3,35 +3,20 @@ Script and files to install debian 11 minimal with firmware and some software an
 
 ### HowTo
 
- 1. Take 2 usb sticks
- 2. Copy this repos content unzipped to usb stick 1
- 3. Write debian 11 iso to usb stick 2:
+
+ 1. Write debian 11 iso to usb stick:
  - https://www.balena.io/etcher/
  - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/bullseye_di_rc2+nonfree/amd64/iso-cd/
- 4. Insert both usb sticks
- 5. Boot from usb stick2 and install debian 11 minimal without desktop
+ 2. Boot from usb stick and install debian 11 minimal without desktop
    ![](/img/minimal.png)
- 6. Login as root
- 7. Find usb device
+ 3. Login as root
+ 4. Download and start script
 ```bash
-blkid -o export
-```
- 8. And mount it (u may need to replace sda2)
-```bash
-mkdir /media/usb/
-mount /dev/sda2 /media/usb 
-```
- 9. Copy and add permission to execute script
-```bash
-cp -r /media/usb/ /home/<yourusername>/postinstall_debian11/
-chown -R <yourusername> /home/<yourusername>/posinstall_debian11/
-chgrp -R <yourusername> /home/<yourusername>/posinstall_debian11/
-chmod a+x /home/<yourusername>/posinstall_debian11/postinstall_debian
-```
- 10. Start script as normal user. not root:
-```bash
-su yourusername
-posinstall_debian11/postinstall_debian
+apt install wget
+su <yourusername>
+wget -O postinstall_debian https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/postinstall_debian
+chmod a+x postinstall_debian
+./postinstall_debian
 ```
 
 ### All Options
