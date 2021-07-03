@@ -21,8 +21,7 @@ blkid -o export
 mkdir /media/usb/
 mount /dev/sda2 /media/usb 
 ```
- 9. Add permission to execute script
-    
+ 9. Copy and add permission to execute script
 ```bash
 cp -r /media/usb/ /home/<yourusername>/postinstall_debian11/
 chown -R <yourusername> /home/<yourusername>/posinstall_debian11/
