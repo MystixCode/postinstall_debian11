@@ -126,8 +126,8 @@ icons() {
 }
 
 changeWallpaper(){
-	#TODO: wget wallpaper from repo
-	echo Select Wallpaper:
+    #TODO: wget wallpaper from repo
+    echo Select Wallpaper:
     wallpaper=$(zenity --file-selection)
     echo $wallpaper
 	dbus-send --session --dest=org.kde.plasmashell --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string: 
