@@ -31,18 +31,15 @@ updateSystem() {
 }
 
 installFirmware() {
-
     sudo apt-get install firmware-amd-graphics libgl1-mesa-dri libglx-mesa0 mesa-vulkan-drivers xserver-xorg-video-all
     sudo dpkg --add-architecture i386 && sudo apt update
     sudo apt install libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
-
-#    cd /media/usb/firmware/
-#    sudo dpkg -i firmware-amd-graphics_20210315-2_all.deb libgl1-mesa-dri_20.3.4-1_amd64.deb libglx-mesa0_20.3.4-1_amd64.deb mesa-vulkan-drivers_20.3.4-1_amd64.deb
-#    sudo apt --fix-broken install
 }
 
 installKDEPlasmaMinimal() {
     sudo apt -qq install kde-plasma-desktop plasma-nm -y
+    sudo sed -i 's/^managed=false/managed=true/' /etc/NetworkManager/NetworkManager.conf
+    sudo systemctl restart NetworkManager
 }
 
 installFirewall() {
@@ -229,7 +226,7 @@ fi
 echo -n "${red}Reboot now to start new installed kde / firmware (y/n) $normal?"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-  shutdown -r now
+  sudo shutdown -r now
 fi
 ################################################################################################
 echo -n "${purple}Install firewall (y/n)? $normal"
@@ -280,12 +277,6 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     changeWallpaper
 fi
 ################################################################################################
-echo -n "${purple}Change global theme (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    changeGlobalTheme
-fi
-################################################################################################
 echo -n "${purple}Disable mouse acceleration (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
@@ -308,6 +299,12 @@ echo -n "${purple}Disable bluetooth (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     disableBluetooth
+fi
+################################################################################################
+echo -n "${purple}Change global theme (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    changeGlobalTheme
 fi
 ################################################################################################
 lsb_release -s -d
