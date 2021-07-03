@@ -18,15 +18,19 @@ blkid -o device
 ```
  8. And mount it (u may need to replace sda1)
 ```bash
-sudo mkdir /media/usb/
-sudo mount /dev/sda1 /media/usb 
+mkdir /media/usb/
+mount /dev/sda2 /media/usb 
 cd /media/usb
 ```
  9. Add permission to execute and start the script
     
 ```bash
 chmod a+x postinstall_debian
-./postinstall_debian
+```
+ 10. Then start script as nomral user. not root:
+```bash
+su yourusername
+./media/usb/postinstall_debian
 ```
 
 ### All Options
