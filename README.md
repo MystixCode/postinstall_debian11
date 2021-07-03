@@ -16,7 +16,7 @@ A bash script to use on a fresh installed debian11 minimal to install and config
 ```bash
 blkid -o export
 ```
- 8. And mount it (u may need to replace sda1)
+ 8. And mount it (u may need to replace sda2)
 ```bash
 mkdir /media/usb/
 mount /dev/sda2 /media/usb 
