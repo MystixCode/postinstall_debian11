@@ -4,14 +4,14 @@ A bash script to use on a fresh installed debian11 minimal to install and config
 ### HowTo
 
  1. Take 2 usb sticks
- 2. Copy this repo unzipped on usb stick 1
- 3. Write debian 11 iso on usb stick 2:
+ 2. Copy this repo unzipped to usb stick 1
+ 3. Write debian 11 iso to usb stick 2:
  - https://www.balena.io/etcher/
  - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/bullseye_di_rc2+nonfree/amd64/iso-cd/
  4. Insert both usb sticks
- 5. boot from usb stick2 and install debian 11 minimal without desktop
-   todo here img
- 6. login as root
+ 5. Boot from usb stick2 and install debian 11 minimal without desktop
+   ![](/img/minimal.png)
+ 6. Login as root
  7. Find usb device
 ```bash
 blkid -o export
