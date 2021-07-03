@@ -3,6 +3,7 @@ A bash script to use on a fresh installed debian11 minimal to install and config
 
 ### HowTo
 First install a debian 11 minimal. Do not select any desktop environment during install (everything unselected there).
+https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/
 Then download and execute this script:
 
 ```bash
