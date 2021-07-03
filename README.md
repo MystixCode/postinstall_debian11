@@ -20,17 +20,19 @@ blkid -o export
 ```bash
 mkdir /media/usb/
 mount /dev/sda2 /media/usb 
-cd /media/usb
 ```
  9. Add permission to execute script
     
 ```bash
-chmod a+x postinstall_debian
+cp -r /media/usb/ /home/<yourusername>/postinstall_debian11/
+chown -R <yourusername> /home/<yourusername>/posinstall_debian11/
+chgrp -R <yourusername> /home/<yourusername>/posinstall_debian11/
+chmod a+x /home/<yourusername>/posinstall_debian11/postinstall_debian
 ```
  10. Start script as normal user. not root:
 ```bash
 su yourusername
-./media/usb/postinstall_debian
+posinstall_debian11/postinstall_debian
 ```
 
 ### All Options
