@@ -1,8 +1,7 @@
 # postinstall_debian11
-Script and files to install debian 11 minimal with firmware and some software and configs
+Script to install debian 11 minimal with selected software and configs
 
 ### HowTo
-
 
  1. Write debian 11 iso to usb stick:
  - https://www.balena.io/etcher/
@@ -12,7 +11,7 @@ Script and files to install debian 11 minimal with firmware and some software an
  3. Login as root
  4. Download and start script
 ```bash
-apt install wget
+apt install wget -y
 su <yourusername>
 wget -O postinstall_debian https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/postinstall_debian
 chmod a+x postinstall_debian
@@ -20,6 +19,7 @@ chmod a+x postinstall_debian
 ```
 
 ### All Options
+
  - Update system
  - install firmware (installs amdgpu stuff)
  - Install KDE-plasma minimal
@@ -37,4 +37,3 @@ chmod a+x postinstall_debian
  - Configure dolphin
  - Disable wifi
  - Disable bluetooth
-
