@@ -22,12 +22,12 @@ mkdir /media/usb/
 mount /dev/sda2 /media/usb 
 cd /media/usb
 ```
- 9. Add permission to execut
+ 9. Add permission to execute script
     
 ```bash
 chmod a+x postinstall_debian
 ```
- 10. Then start script as normal user. not root:
+ 10. Start script as normal user. not root:
 ```bash
 su yourusername
 ./media/usb/postinstall_debian
