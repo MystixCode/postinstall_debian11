@@ -127,6 +127,8 @@ icons() {
 
 changeWallpaper(){
     #TODO: wget wallpaper from repo
+    wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
+    wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
     echo Select Wallpaper:
     wallpaper=$(zenity --file-selection)
     echo $wallpaper
