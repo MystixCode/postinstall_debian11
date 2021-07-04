@@ -21,19 +21,26 @@ chmod a+x postinstall_debian
 ### All Options
 
  - Update system
- - install firmware (installs amdgpu stuff)
+ - Install amdgpu firmware
  - Install KDE-plasma minimal
- - Reboot now
+ - Reboot now to start new installed kde / firmware
  - Install firewall
  - Install steam
- - Install graphic software
+ - Install graphic software 
  - Install golang
  - Install qemu/kvm
  - Create network bridge for qemu/kvm
- - Install more software
- - Change wallpaper
- - Change global theme
+ - Install more software (keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular)
+ - Disable wifi
+ - Disable bluetooth 
+ - Enable airplane mode
+ - Disable History
  - Disable mouse acceleration
  - Configure dolphin
- - Disable wifi
- - Disable bluetooth
+ - Change taskbar location to left
+ - Install minimalmenu
+ - Change wallpaper
+ - Change global theme
+ - Install sddm theme
+ - Configure Screenlock
+
