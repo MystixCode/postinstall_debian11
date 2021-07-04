@@ -34,7 +34,7 @@ chmod a+x postinstall_debian
  - Disable wifi
  - Disable bluetooth 
  - Enable airplane mode
- - Disable History
+ - Disable history
  - Disable mouse acceleration
  - Configure dolphin
  - Change taskbar location to left
