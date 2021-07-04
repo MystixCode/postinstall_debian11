@@ -186,7 +186,7 @@ change_global_theme() {
 
 functions_array=("update_system" "install_firmware" "install_kde_plasma_minimal" "reboot_now" "install_firewall" "install_steam" "install_graphic_software" "install_go" "install_qemu_kvm" "create_bridge" "install_more_software" "disable_wifi" "disable_bluetooth" "enable_airplane_mode" "disable_history" "disable_mouse_acceleration" "configure_dolphin" "change_taskbar" "install_minimal_menu" "change_wallpaper" "install_sddm_theme" "configure_lockscreen" "change_global_theme")
 
-for i in "${functions_array[@]}"; do       # also here
+for i in "${functions_array[@]}"; do
     formatted1=${i//_/ }
     formatted2=${formatted1^}
     echo -n "${purple}${formatted2^} (y/n)? $normal"
