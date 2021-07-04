@@ -35,6 +35,7 @@ chmod a+x postinstall_debian
  - disable_history
  - disable_mouse_acceleration
  - configure_dolphin
+ - configure_firefox
  - change_taskbar
  - install_minimal_menu
  - configure_lockscreen (Timeout 10min)
