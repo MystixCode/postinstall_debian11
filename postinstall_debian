@@ -222,7 +222,6 @@ done
 lsb_release -s -d
 echo "${green}Done... $normal"
 
-#TODO question choose theme by number (default BreezeDark)
 #TODO monitor to max hertz
 #TODO pin fav software to panel
 #TODO doubleclick to open dir in dolphin
