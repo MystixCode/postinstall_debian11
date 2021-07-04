@@ -6,8 +6,7 @@ Script to install debian 11 minimal with selected software and configs
  1. Write debian 11 iso to usb stick:
  - https://www.balena.io/etcher/
  - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/bullseye_di_rc2+nonfree/amd64/iso-cd/
- 2. Boot from usb stick and install debian 11 minimal without desktop
-   ![](/img/minimal.png)
+ 2. Boot from usb stick and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
  3. Login as root
  4. Download and start script
 ```bash
@@ -19,28 +18,27 @@ chmod a+x postinstall_debian
 ```
 
 ### All Options
-
- - Update system
- - Install amdgpu firmware
- - Install KDE-plasma minimal
- - Reboot now to start new installed kde / firmware
- - Install firewall
- - Install steam
- - Install graphic software (gimp krita blender)
- - Install golang
- - Install qemu/kvm
- - Create network bridge for qemu/kvm
- - Install more software (keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular)
- - Disable wifi
- - Disable bluetooth 
- - Enable airplane mode
- - Disable history
- - Disable mouse acceleration
- - Configure dolphin
- - Change taskbar location to left
- - Install minimalmenu
- - Change wallpaper
- - Change global theme
- - Install sddm theme
- - Configure Screenlock
-
+ - update_system
+ - install_firmware (amdgpu)
+ - install_kde_plasma_minimal
+ - reboot_now
+ - install_firewall
+ - install_steam
+ - install_graphic_software (gimp krita blender)
+ - install_go
+ - install_qemu_kvm
+ - create_bridge (network bridge for qemu/kvm)
+ - install_more_software (keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview)
+ - disable_wifi
+ - disable_bluetooth
+ - enable_airplane_mode
+ - disable_history
+ - disable_mouse_acceleration
+ - configure_dolphin
+ - change_taskbar
+ - install_minimal_menu
+ - configure_lockscreen (Timeout 10min)
+ - change_global_theme_dark
+ - change_global_theme_light
+ - change_wallpaper
+ - restart_ui
