@@ -12,13 +12,11 @@ if ! [ "$EUID" -ne 0 ] ; then
     echo "${orange}Dont run this script as root, run as the user whose environment u want to change.$normal"
     exit
 fi
-
 #install sudo if not already installed
 if ! hash sudo 2>/dev/null; then
 	echo "${purple}installing sudo$normal"
     su -c "apt install sudo ; echo '$USER ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
 fi
-
 update_system() {
     sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
 }
@@ -123,7 +121,7 @@ install_minimal_menu() {
     echo "${orange}Manually download to /home/$USER/Downloads/ from here:$normal"
     echo "${lightblue}${underline}https://store.kde.org/s/KDE%20Store/p/1275285$normal"
     read -p "${red}Then Press enter to continue$normal"
-    #Todo automate this with permanent working link
+    #TODO automate this with permanent working link
     #wget -O ~/Downloads/minimalmenu-0.3.0.plasmoid https://dllb2.pling.com/api/files/download/j/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE1NDMwNDk1NDQiLCJ1IjpudWxsLCJsdCI6ImRvd25sb2FkIiwicyI6IjQ5Yjk5Nzg5N2U5NGExYWUxYWM3MmNiZWU1ZWI0MWJlMWFiYzE4OTIxOTBlZGQyMDU0MjhmN2QzNjEzODg1MGVlYzZkNDA1ZGQzOWZmMTlkZjg3Mjk0NTE2MTY5ZDY0YjYyODJkZTMyMzhkNDVlMjI1MDFjYWM5MzI4M2M2ZWVjIiwidCI6MTYyNTM1MzczNywic3RmcCI6IjQ2NGQ2YTAxZGQ1Mjk5NzY3OWE3ZDE1Nzk1OTBlYTM0Iiwic3RpcCI6IjJhMDI6MTIwNTozNGMxOmUwYzA6NzJjMDphNWZkOjkxNzU6NmQ2In0.WCdUSToV3lxljvpDuaCH_jrC89NfNvc6n0YGXsWlZq8/minimalmenu-0.3.0.plasmoid
     sudo kpackagetool5 -i ~/Downloads/minimalmenu-0.3.0.plasmoid
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key customButtonImage /usr/share/pixmaps/debian-logo.png
@@ -131,7 +129,6 @@ install_minimal_menu() {
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key switchCategoriesOnHover false
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key useCustomButtonImage true
 }
-
 install_sddm_theme() {
     sudo apt install sddm-theme-breeze
     sudo rm -rf /usr/share/sddm/themes/debian-theme
@@ -228,27 +225,28 @@ restart_ui() {
     qdbus org.kde.KWin /KWin reconfigure
     kquitapp5 plasmashell && kstart5 plasmashell
 }
-
+helpmenu(){
+    echo "${purple}Usage:$normal ./postinstall_debian <option>"
+    echo "${orange}Starts in interactive mode without arguments$normal"
+    echo ""
+    echo "-h        --help                    Display Help"
+    echo ""
+    echo "${orange}Options:$normal"
+    echo -e "update_system\ninstall_firmware\ninstall_kde_plasma_minimal\nreboot_now\ninstall_firewall\ninstall_steam\ninstall_graphic_software\ninstall_go\ninstall_qemu_kvm\ncreate_bridge\ninstall_more_software\ndisable_wifi\ndisable_bluetooth\nenable_airplane_mode\ndisable_history\ndisable_mouse_acceleration\nconfigure_dolphin\nconfigure_firefox\nchange_taskbar\ninstall_minimal_menu\nconfigure_lockscreen\nchange_global_theme_dark\nchange_global_theme_light\nchange_wallpaper\nrestart_ui"
+    exit
+}
 functions_array=(update_system install_firmware install_kde_plasma_minimal reboot_now install_firewall install_steam install_graphic_software install_go install_qemu_kvm create_bridge install_more_software disable_wifi disable_bluetooth enable_airplane_mode disable_history disable_mouse_acceleration configure_dolphin configure_firefox change_taskbar install_minimal_menu configure_lockscreen change_global_theme_dark change_global_theme_light change_wallpaper restart_ui)
-
 if [[ " $# " -ne 0 ]]; then
     #echo "${orange}Total Arguments: $# $normal"
     for i in $@
     do
         if [[ ${i} = "-h" || ${i} = "--help" ]]; then
-            echo "${purple}Usage:$normal ./postinstall_debian <option>"
-            echo "${orange}Starts in interactive mode without arguments$normal"
-            echo ""
-            echo "-h        --help                    Display Help"
-            echo ""
-            echo "${orange}Options:$normal"
-            echo -e "update_system\ninstall_firmware\ninstall_kde_plasma_minimal\nreboot_now\ninstall_firewall\ninstall_steam\ninstall_graphic_software\ninstall_go\ninstall_qemu_kvm\ncreate_bridge\ninstall_more_software\ndisable_wifi\ndisable_bluetooth\nenable_airplane_mode\ndisable_history\ndisable_mouse_acceleration\nconfigure_dolphin\nconfigure_firefox\nchange_taskbar\ninstall_minimal_menu\nconfigure_lockscreen\nchange_global_theme_dark\nchange_global_theme_light\nchange_wallpaper\nrestart_ui"
-            exit
+            helpmenu
         fi
         if [[ " ${functions_array[@]} " =~ " ${i} " ]]; then
             # whatever you want to do when array contains value
             echo "${green}Option ${i} valid$normal"
-            ${i}
+            ${i} #exec function
         else
             echo "${red}Unknown option ${i}$normal"
         fi
@@ -264,7 +262,6 @@ else
         fi
     done
 fi
-
 #TODO monitor to max hertz
 #TODO pin fav software to panel
 #TODO doubleclick to open dir in dolphin
