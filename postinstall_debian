@@ -1,3 +1,4 @@
+ 
 #!/bin/bash
 
 bold=`echo -en "\e[1m"`
@@ -22,7 +23,7 @@ installSudo() {
 	echo "sudo already installed"
     else
 	echo "${purple}installing sudo$normal"
-        su -c "apt install sudo ; echo 'master ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
+        su -c "apt install sudo ; echo '$USER ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
     fi
 }
 
@@ -68,7 +69,7 @@ installQemuKVM() {
     echo "${green}kvm supported and enabled in bios$normal"
     #install virtual environment
     sudo apt -qq install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
-    sudo gpasswd -a master kvm
+    sudo gpasswd -a $USER kvm
     #todo Add virt manager to panel
   else
     echo "${red}kvm not supported or not enabled in bios$normal"
@@ -95,6 +96,70 @@ installMoreSoftware() {
 #removeSoftware() {
 #    sudo apt -qq remove kactivitymanagerd -y
 #}
+
+disableWifi() {
+    nmcli radio all off
+}
+
+disableBluetooth() {
+    sudo systemctl stop bluetooth.service
+}
+
+enableAirplaneMode() {
+    kwriteconfig5 --file ~/.config/plasma-nm --group General --key AirplaneModeEnabled true
+}
+
+disableHistory() {
+    kwriteconfig5 --file ~/.config/kactivitymanagerd-pluginsrc --group Plugin-org.kde.ActivityManager.Resources.Scoring --key what-to-remember 1
+}
+
+disableMouseAcceleration() {
+    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptAccelProfileFlat true
+    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptPointerAcceleration 1
+}
+
+configDolphin() {
+    kwriteconfig5 --file ~/.local/share/dolphin/view_properties/global/.directory --group Settings --key HiddenFilesShown true
+    kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPath true
+    kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPathInTitlebar true
+    kwriteconfig5 --file ~/.config/dolphinrc --group Search --key Location Everywhere
+}
+
+taskbarLocation() {
+    kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --key formfactor 3
+    kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --key location 5
+}
+
+installMinimalMenu() {
+    echo "${orange}Manually download to /home/$USER/Downloads/ from here:$normal"
+    echo "${lightblue}${underline}https://store.kde.org/s/KDE%20Store/p/1275285$normal"
+    read -p "${red}Then Press enter to continue$normal"
+
+    #Todo automate this with permanent working link
+    #wget -O ~/Downloads/minimalmenu-0.3.0.plasmoid https://dllb2.pling.com/api/files/download/j/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE1NDMwNDk1NDQiLCJ1IjpudWxsLCJsdCI6ImRvd25sb2FkIiwicyI6IjQ5Yjk5Nzg5N2U5NGExYWUxYWM3MmNiZWU1ZWI0MWJlMWFiYzE4OTIxOTBlZGQyMDU0MjhmN2QzNjEzODg1MGVlYzZkNDA1ZGQzOWZmMTlkZjg3Mjk0NTE2MTY5ZDY0YjYyODJkZTMyMzhkNDVlMjI1MDFjYWM5MzI4M2M2ZWVjIiwidCI6MTYyNTM1MzczNywic3RmcCI6IjQ2NGQ2YTAxZGQ1Mjk5NzY3OWE3ZDE1Nzk1OTBlYTM0Iiwic3RpcCI6IjJhMDI6MTIwNTozNGMxOmUwYzA6NzJjMDphNWZkOjkxNzU6NmQ2In0.WCdUSToV3lxljvpDuaCH_jrC89NfNvc6n0YGXsWlZq8/minimalmenu-0.3.0.plasmoid
+
+    sudo kpackagetool5 -i ~/Downloads/minimalmenu-0.3.0.plasmoid
+
+    kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key customButtonImage /usr/share/pixmaps/debian-logo.png
+    kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key favoritesPortedToKAstats true
+    kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key switchCategoriesOnHover false
+    kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key useCustomButtonImage true
+}
+
+changeWallpaper(){
+    wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
+    wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
+    echo Select Wallpaper:
+    wallpaper=$(zenity --file-selection)
+    echo $wallpaper
+	dbus-send --session --dest=org.kde.plasmashell --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string: 
+		var Desktops = desktops(); 
+			for (i=0;i<Desktops.length;i++){	
+				d = Desktops[i]; d.wallpaperPlugin = "org.kde.image"; 
+				d.currentConfigGroup = Array("Wallpaper","org.kde.image","General"); 
+				d.writeConfig("Image","file://'$wallpaper'");
+			}'
+}
 
 lookAndFeel() {
     lookandfeeltool -a "$1"
@@ -125,22 +190,6 @@ icons() {
     kwriteconfig5 --file ~/.config/kdeglobals --group Icons --key Theme "$1"
 }
 
-changeWallpaper(){
-    #TODO: wget wallpaper from repo
-    wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
-    wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
-    echo Select Wallpaper:
-    wallpaper=$(zenity --file-selection)
-    echo $wallpaper
-	dbus-send --session --dest=org.kde.plasmashell --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string: 
-		var Desktops = desktops(); 
-			for (i=0;i<Desktops.length;i++){	
-				d = Desktops[i]; d.wallpaperPlugin = "org.kde.image"; 
-				d.currentConfigGroup = Array("Wallpaper","org.kde.image","General"); 
-				d.writeConfig("Image","file://'$wallpaper'");
-			}'
-}
-
 cursor() {
     kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key cursorTheme "$1"
 }
@@ -169,32 +218,22 @@ changeGlobalTheme() {
     cursor "breeze_cursors"
     gtkCursor "breeze_cursors"
     splashScreen "org.kde.breeze.desktop"
-    restartUI
 }
 
-disableMouseAcceleration() {
-    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptAccelProfileFlat true
-    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptPointerAcceleration 1
+installSDDMTheme() {
+    sudo apt install sddm-theme-breeze
+    sudo kwriteconfig5 --file /usr/share/sddm/themes/breeze/theme.conf --group General --key background /home/$USER/Downloads/wallpaper_dark.jpg
+    sudo rm -rf /usr/share/sddm/themes/debian-theme
+    sudo ln -s /usr/share/sddm/themes/breeze /usr/share/sddm/themes/debian-theme
+    #sudo sddm-greeter --theme /usr/share/sddm/themes/breeze
+    #sudo sddm-greeter --theme /usr/share/sddm/themes/mystix-theme
+    #sudo sddmthemeinstaller -i /home/$USER/Downloads/plasma-chili.tar.gz 
 }
 
-configDolphin() {
-    #TODO show all files.
-    kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPath true
-    kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPathInTitlebar true
-    kwriteconfig5 --file ~/.config/dolphinrc --group Search --key Location Everywhere
+screenlockConf() {
+    kwriteconfig5 --file ~/.config/kscreenlockerrc --group Daemon --key Timeout 10
+    kwriteconfig5 --file ~/.config/kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image /home/$USER/Downloads/wallpaper_dark.jpg
 }
-
-disableWifi() {
-    nmcli radio all off
-}
-
-disableBluetooth() {
-    sudo systemctl stop bluetooth.service
-}
-
-###########################################################################
-## MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN MAIN ##
-###########################################################################
 
 echo "${bold}${purple}##########################################$normal"
 echo "${bold}${purple}## Debian 11 minimal postinstall script ##$normal"
@@ -274,10 +313,28 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     installMoreSoftware
 fi
 ################################################################################################
-echo -n "${purple}Change wallpaper (y/n)? $normal"
+echo -n "${purple}Disable wifi (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-    changeWallpaper
+    disableWifi
+fi
+################################################################################################
+echo -n "${purple}Disable bluetooth (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    disableBluetooth
+fi
+################################################################################################
+echo -n "${purple}Enable airplane mode (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    enableAirplaneMode
+fi
+################################################################################################
+echo -n "${purple}Disable History (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    disableHistory
 fi
 ################################################################################################
 echo -n "${purple}Disable mouse acceleration (y/n)? $normal"
@@ -292,16 +349,22 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
    configDolphin
 fi
 ################################################################################################
-echo -n "${purple}Disable wifi (y/n)? $normal"
+echo -n "${purple}Change taskbar location to left (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-    disableWifi
+    taskbarLocation
 fi
 ################################################################################################
-echo -n "${purple}Disable bluetooth (y/n)? $normal"
+echo -n "${purple}Install minimalmenu (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-    disableBluetooth
+    installMinimalMenu
+fi
+################################################################################################
+echo -n "${purple}Change wallpaper (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    changeWallpaper
 fi
 ################################################################################################
 echo -n "${purple}Change global theme (y/n)? $normal"
@@ -310,13 +373,23 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     changeGlobalTheme
 fi
 ################################################################################################
+echo -n "${purple}Install sddm theme (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    installSDDMTheme
+fi
+################################################################################################
+echo -n "${purple}Configure Screenlock (y/n)? $normal"
+read answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    screenlockConf
+fi
+restartUI
 lsb_release -s -d
 echo "${green}Done... $normal"
-
 
 #TODO question choose theme by number (default BreezeDark)
 #TODO monitor to max hertz
 #TODO pin fav software to panel
 #TODO doubleclick to open dir in dolphin
-#TODO sddm wallpaper and theme
 #TODO firefox config
