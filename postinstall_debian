@@ -110,23 +110,9 @@ install_minimal_menu() {
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key switchCategoriesOnHover false
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key useCustomButtonImage true
 }
-change_wallpaper() {
-    wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
-    wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
-    echo Select Wallpaper:
-    wallpaper=$(zenity --file-selection)
-    echo $wallpaper
-	dbus-send --session --dest=org.kde.plasmashell --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string: 
-		var Desktops = desktops(); 
-			for (i=0;i<Desktops.length;i++){	
-				d = Desktops[i]; d.wallpaperPlugin = "org.kde.image"; 
-				d.currentConfigGroup = Array("Wallpaper","org.kde.image","General"); 
-				d.writeConfig("Image","file://'$wallpaper'");
-			}'
-}
+
 install_sddm_theme() {
     sudo apt install sddm-theme-breeze
-    sudo kwriteconfig5 --file /usr/share/sddm/themes/breeze/theme.conf --group General --key background /home/$USER/Downloads/wallpaper_dark.jpg
     sudo rm -rf /usr/share/sddm/themes/debian-theme
     sudo ln -s /usr/share/sddm/themes/breeze /usr/share/sddm/themes/debian-theme
     #sudo sddm-greeter --theme /usr/share/sddm/themes/breeze
@@ -134,7 +120,6 @@ install_sddm_theme() {
 }
 configure_lockscreen() {
     kwriteconfig5 --file ~/.config/kscreenlockerrc --group Daemon --key Timeout 10
-    kwriteconfig5 --file ~/.config/kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image /home/$USER/Downloads/wallpaper_dark.jpg
 }
 look_and_feel() {
     lookandfeeltool -a "$1"
@@ -167,11 +152,8 @@ gtk_cursor() {
 splash_screen() {
     kwriteconfig5 --file ~/.config/ksplashrc --group KSplash --key Theme "$1"
 }
-restart_ui() {
-    qdbus org.kde.KWin /KWin reconfigure
-    kquitapp5 plasmashell && kstart5 plasmashell
-}
-change_global_theme() {
+change_global_theme_dark() {
+    install_sddm_theme
     look_and_feel "org.kde.breezedark.desktop"
     plasma_theme "breeze-dark"
     application_style_edit "Breeze"
@@ -183,8 +165,50 @@ change_global_theme() {
     gtk_cursor "breeze_cursors"
     splash_screen "org.kde.breeze.desktop"
 }
+change_global_theme_light() {
+    install_sddm_theme
+    look_and_feel "org.kde.breeze.desktop"
+    plasma_theme "breeze"
+    application_style_edit "Breeze"
+    window_decoration "org.kde.breeze" "Breeze"
+    gtk_theme "Breeze"
+    color_scheme "Breeze"
+    icons "breeze"
+    cursor "breeze_cursors"
+    gtk_cursor "breeze_cursors"
+    splash_screen "org.kde.breeze.desktop"
+}
+change_wallpaper() {
+    wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
+    wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
+    echo "${orange}Choose standard wallpaper$normal"
+    wallpaper=$(zenity --file-selection --title="Choose standard wallpaper")
+    echo "standard wallpaper:   $wallpaper"
+    echo "${orange}Choose login wallpaper$normal"
+    wallpaper_sddm=$(zenity --file-selection --title="Choose login wallpaper")
+    echo "login wallpaper:      $wallpaper_sddm"
+    echo "${orange}Choose lockscreen wallpaper$normal"
+    wallpaper_lock=$(zenity --file-selection --title="Choose lockscreen wallpaper")
+    echo "lockscreen wallpaper: $wallpaper_lock"
+    #sddm wallpaper
+    sudo kwriteconfig5 --file /usr/share/sddm/themes/breeze/theme.conf --group General --key background $wallpaper_sddm
+    #lockscreen wallpaper
+    kwriteconfig5 --file ~/.config/kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image $wallpaper_lock
+    #wallpaper
+	dbus-send --session --dest=org.kde.plasmashell --type=method_call /PlasmaShell org.kde.PlasmaShell.evaluateScript 'string: 
+		var Desktops = desktops(); 
+			for (i=0;i<Desktops.length;i++){	
+				d = Desktops[i]; d.wallpaperPlugin = "org.kde.image"; 
+				d.currentConfigGroup = Array("Wallpaper","org.kde.image","General"); 
+				d.writeConfig("Image","file://'$wallpaper'");
+			}'
+}
+restart_ui() {
+    qdbus org.kde.KWin /KWin reconfigure
+    kquitapp5 plasmashell && kstart5 plasmashell
+}
 
-functions_array=("update_system" "install_firmware" "install_kde_plasma_minimal" "reboot_now" "install_firewall" "install_steam" "install_graphic_software" "install_go" "install_qemu_kvm" "create_bridge" "install_more_software" "disable_wifi" "disable_bluetooth" "enable_airplane_mode" "disable_history" "disable_mouse_acceleration" "configure_dolphin" "change_taskbar" "install_minimal_menu" "change_wallpaper" "install_sddm_theme" "configure_lockscreen" "change_global_theme")
+functions_array=("update_system" "install_firmware" "install_kde_plasma_minimal" "reboot_now" "install_firewall" "install_steam" "install_graphic_software" "install_go" "install_qemu_kvm" "create_bridge" "install_more_software" "disable_wifi" "disable_bluetooth" "enable_airplane_mode" "disable_history" "disable_mouse_acceleration" "configure_dolphin" "change_taskbar" "install_minimal_menu" "configure_lockscreen" "change_global_theme_dark" "change_global_theme_light" "change_wallpaper" "restart_ui")
 
 for i in "${functions_array[@]}"; do
     formatted1=${i//_/ }
@@ -195,8 +219,6 @@ for i in "${functions_array[@]}"; do
         ${i}
     fi
 done
-
-restart_ui
 lsb_release -s -d
 echo "${green}Done... $normal"
 
