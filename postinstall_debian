@@ -1,4 +1,3 @@
- 
 #!/bin/bash
 
 bold=`echo -en "\e[1m"`
