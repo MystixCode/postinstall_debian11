@@ -26,7 +26,7 @@ chmod a+x postinstall_debian
  - Reboot now to start new installed kde / firmware
  - Install firewall
  - Install steam
- - Install graphic software 
+ - Install graphic software (gimp krita blender)
  - Install golang
  - Install qemu/kvm
  - Create network bridge for qemu/kvm
