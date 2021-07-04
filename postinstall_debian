@@ -1,5 +1,4 @@
 #!/bin/bash
-
 bold=`echo -en "\e[1m"`
 purple=`echo -en "\e[35m"`
 orange=`echo -en "\e[33m"`
@@ -8,144 +7,110 @@ green=`echo -en "\e[32m"`
 lightblue=`echo -en "\e[94m"`
 underline=`echo -en "\e[4m"`
 normal=`echo -en "\e[0m"`
+#not superuser check
+if ! [ "$EUID" -ne 0 ] ; then
+    echo "${orange}Dont run this script as root, run as the user whose environment u want to change.$normal"
+    exit
+fi
 
-isRoot() {
-  if [ "$EUID" -ne 0 ] ; then
-    false
-  else
-    true
-  fi
-}
-
-installSudo() {
-    if hash sudo 2>/dev/null; then
-	echo "sudo already installed"
-    else
+#install sudo if not already installed
+if ! hash sudo 2>/dev/null; then
 	echo "${purple}installing sudo$normal"
-        su -c "apt install sudo ; echo '$USER ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
-    fi
-}
+    su -c "apt install sudo ; echo '$USER ALL=(ALL:ALL) ALL' | sudo EDITOR='tee -a' visudo"
+fi
 
-updateSystem() {
+update_system() {
     sudo apt -qq update && sudo apt -qq upgrade -y && sudo apt -qq full-upgrade -y && sudo apt -qq autoremove -y
 }
-
-installFirmware() {
-    sudo apt-get install firmware-amd-graphics libgl1-mesa-dri libglx-mesa0 mesa-vulkan-drivers xserver-xorg-video-all
+install_firmware() {
     sudo dpkg --add-architecture i386 && sudo apt update
-    sudo apt install libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386
+    sudo apt -qq install firmware-amd-graphics libgl1-mesa-dri libglx-mesa0 mesa-vulkan-drivers xserver-xorg-video-all libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386 -y
 }
-
-installKDEPlasmaMinimal() {
+install_kde_plasma_minimal() {
     sudo apt -qq install kde-plasma-desktop plasma-nm -y
     sudo sed -i 's/^managed=false/managed=true/' /etc/NetworkManager/NetworkManager.conf
     sudo systemctl restart NetworkManager
 }
-
-installFirewall() {
+reboot_now() { 
+    sudo shutdown -r now
+}
+install_firewall() {
     sudo apt -qq install ufw gufw -y
     sudo ufw enable
 }
-
-installSteam() {
+install_steam() {
     sudo dpkg --add-architecture i386
     sudo apt -qq update
     sudo apt -qq install steam -y
 }
-
-installGraphicSoftware() {
+install_graphic_software() {
     sudo apt -qq install gimp krita blender -y
 }
-
-installGo() {
+install_go() {
     sudo apt -qq install golang -y
     echo "${orange}you can install goland manually from here:$normal"
     echo "${lightblue}${underline}https://www.jetbrains.com/de-de/go/download/download-thanks.html?platform=linux$normal"
 }
-
-installQemuKVM() {
+install_qemu_kvm() {
   if [[ $(egrep -c '(vmx|svm)' /proc/cpuinfo) > 0 ]];then
     echo "${green}kvm supported and enabled in bios$normal"
-    #install virtual environment
     sudo apt -qq install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virt-manager -y
     sudo gpasswd -a $USER kvm
-    #todo Add virt manager to panel
   else
     echo "${red}kvm not supported or not enabled in bios$normal"
   fi
 }
-
-createBridge() {
+create_bridge() {
   ip link show
   read -p "${green}Enter Network Interface with Internet access ( enp4s0 ): $normal" iface
-  
-  #network bridge
   sudo brctl addbr br0
   sudo ip link set $iface down
   sudo ip link set $iface up
   sudo brctl addif br0 $iface
   sudo dhclient br0
 }
-
-installMoreSoftware() {
-    #install kde-plasma minimal and software that i want(maybe ksysguar and kde partitionmanager und gwenview und libreoffice writer)
-    sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular -y
+install_more_software() {
+    sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview -y
 }
-
-#removeSoftware() {
-#    sudo apt -qq remove kactivitymanagerd -y
-#}
-
-disableWifi() {
+disable_wifi() {
     nmcli radio all off
 }
-
-disableBluetooth() {
+disable_bluetooth() {
     sudo systemctl stop bluetooth.service
 }
-
-enableAirplaneMode() {
+enable_airplane_mode() {
     kwriteconfig5 --file ~/.config/plasma-nm --group General --key AirplaneModeEnabled true
 }
-
-disableHistory() {
+disable_history() {
     kwriteconfig5 --file ~/.config/kactivitymanagerd-pluginsrc --group Plugin-org.kde.ActivityManager.Resources.Scoring --key what-to-remember 1
 }
-
-disableMouseAcceleration() {
+disable_mouse_acceleration() {
     kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptAccelProfileFlat true
     kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key XLbInptPointerAcceleration 1
 }
-
-configDolphin() {
+configure_dolphin() {
     kwriteconfig5 --file ~/.local/share/dolphin/view_properties/global/.directory --group Settings --key HiddenFilesShown true
     kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPath true
     kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPathInTitlebar true
     kwriteconfig5 --file ~/.config/dolphinrc --group Search --key Location Everywhere
 }
-
-taskbarLocation() {
+change_taskbar() {
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --key formfactor 3
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --key location 5
 }
-
-installMinimalMenu() {
+install_minimal_menu() {
     echo "${orange}Manually download to /home/$USER/Downloads/ from here:$normal"
     echo "${lightblue}${underline}https://store.kde.org/s/KDE%20Store/p/1275285$normal"
     read -p "${red}Then Press enter to continue$normal"
-
     #Todo automate this with permanent working link
     #wget -O ~/Downloads/minimalmenu-0.3.0.plasmoid https://dllb2.pling.com/api/files/download/j/eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpZCI6IjE1NDMwNDk1NDQiLCJ1IjpudWxsLCJsdCI6ImRvd25sb2FkIiwicyI6IjQ5Yjk5Nzg5N2U5NGExYWUxYWM3MmNiZWU1ZWI0MWJlMWFiYzE4OTIxOTBlZGQyMDU0MjhmN2QzNjEzODg1MGVlYzZkNDA1ZGQzOWZmMTlkZjg3Mjk0NTE2MTY5ZDY0YjYyODJkZTMyMzhkNDVlMjI1MDFjYWM5MzI4M2M2ZWVjIiwidCI6MTYyNTM1MzczNywic3RmcCI6IjQ2NGQ2YTAxZGQ1Mjk5NzY3OWE3ZDE1Nzk1OTBlYTM0Iiwic3RpcCI6IjJhMDI6MTIwNTozNGMxOmUwYzA6NzJjMDphNWZkOjkxNzU6NmQ2In0.WCdUSToV3lxljvpDuaCH_jrC89NfNvc6n0YGXsWlZq8/minimalmenu-0.3.0.plasmoid
-
     sudo kpackagetool5 -i ~/Downloads/minimalmenu-0.3.0.plasmoid
-
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key customButtonImage /usr/share/pixmaps/debian-logo.png
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key favoritesPortedToKAstats true
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key switchCategoriesOnHover false
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --group Applets --group 24 --group Configuration --group General --key useCustomButtonImage true
 }
-
-changeWallpaper(){
+change_wallpaper() {
     wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
     wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
     echo Select Wallpaper:
@@ -159,231 +124,79 @@ changeWallpaper(){
 				d.writeConfig("Image","file://'$wallpaper'");
 			}'
 }
-
-lookAndFeel() {
-    lookandfeeltool -a "$1"
-}
-
-plasmaTheme() {
-    kwriteconfig5 --file ~/.config/plasmarc --group Theme --key name "$1"
-}
-
-applicationStyleEdit() {
-    kwriteconfig5 --file ~/.config/kdeglobals --group KDE --key widgetStyle "$1"
-}
-
-windowDecoration() {
-    kwriteconfig5 --file ~/.config/kwinrc --group org.kde.kdecoration2 --key library "$1"
-    kwriteconfig5 --file ~/.config/kwinrc --group org.kde.kdecoration2 --key theme "$2"
-}
-
-gtkTheme() {
-    kwriteconfig5 --file ~/.config/gtk-3.0/settings.ini --group Settings --key gtk-theme-name "$1"
-}
-
-colorScheme() {
-    kwriteconfig5 --file ~/.config/kdeglobals --group General --key ColorScheme "$1"
-}
-
-icons() {
-    kwriteconfig5 --file ~/.config/kdeglobals --group Icons --key Theme "$1"
-}
-
-cursor() {
-    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key cursorTheme "$1"
-}
-
-gtkCursor() {
-    kwriteconfig5 --file ~/.config/gtk-3.0/settings.ini --group Settings --key gtk-cursor-theme-name "$1"
-}
-
-splashScreen() {
-    kwriteconfig5 --file ~/.config/ksplashrc --group KSplash --key Theme "$1"
-}
-
-restartUI() {
-    qdbus org.kde.KWin /KWin reconfigure
-    kquitapp5 plasmashell && kstart5 plasmashell
-}
-
-changeGlobalTheme() {
-    lookAndFeel "org.kde.breezedark.desktop"
-    plasmaTheme "breeze-dark"
-    applicationStyleEdit "Breeze"
-    windowDecoration "org.kde.breeze" "Breeze"
-    gtkTheme "Breeze"
-    colorScheme "BreezeDark"
-    icons "breeze-dark"
-    cursor "breeze_cursors"
-    gtkCursor "breeze_cursors"
-    splashScreen "org.kde.breeze.desktop"
-}
-
-installSDDMTheme() {
+install_sddm_theme() {
     sudo apt install sddm-theme-breeze
     sudo kwriteconfig5 --file /usr/share/sddm/themes/breeze/theme.conf --group General --key background /home/$USER/Downloads/wallpaper_dark.jpg
     sudo rm -rf /usr/share/sddm/themes/debian-theme
     sudo ln -s /usr/share/sddm/themes/breeze /usr/share/sddm/themes/debian-theme
     #sudo sddm-greeter --theme /usr/share/sddm/themes/breeze
-    #sudo sddm-greeter --theme /usr/share/sddm/themes/mystix-theme
-    #sudo sddmthemeinstaller -i /home/$USER/Downloads/plasma-chili.tar.gz 
+    #sudo sddmthemeinstaller -i /home/$USER/Downloads/theme.tar.gz 
 }
-
-screenlockConf() {
+configure_lockscreen() {
     kwriteconfig5 --file ~/.config/kscreenlockerrc --group Daemon --key Timeout 10
     kwriteconfig5 --file ~/.config/kscreenlockerrc --group Greeter --group Wallpaper --group org.kde.image --group General --key Image /home/$USER/Downloads/wallpaper_dark.jpg
 }
+look_and_feel() {
+    lookandfeeltool -a "$1"
+}
+plasma_theme() {
+    kwriteconfig5 --file ~/.config/plasmarc --group Theme --key name "$1"
+}
+application_style_edit() {
+    kwriteconfig5 --file ~/.config/kdeglobals --group KDE --key widgetStyle "$1"
+}
+window_decoration() {
+    kwriteconfig5 --file ~/.config/kwinrc --group org.kde.kdecoration2 --key library "$1"
+    kwriteconfig5 --file ~/.config/kwinrc --group org.kde.kdecoration2 --key theme "$2"
+}
+gtk_theme() {
+    kwriteconfig5 --file ~/.config/gtk-3.0/settings.ini --group Settings --key gtk-theme-name "$1"
+}
+color_scheme() {
+    kwriteconfig5 --file ~/.config/kdeglobals --group General --key ColorScheme "$1"
+}
+icons() {
+    kwriteconfig5 --file ~/.config/kdeglobals --group Icons --key Theme "$1"
+}
+cursor() {
+    kwriteconfig5 --file ~/.config/kcminputrc --group Mouse --key cursorTheme "$1"
+}
+gtk_cursor() {
+    kwriteconfig5 --file ~/.config/gtk-3.0/settings.ini --group Settings --key gtk-cursor-theme-name "$1"
+}
+splash_screen() {
+    kwriteconfig5 --file ~/.config/ksplashrc --group KSplash --key Theme "$1"
+}
+restart_ui() {
+    qdbus org.kde.KWin /KWin reconfigure
+    kquitapp5 plasmashell && kstart5 plasmashell
+}
+change_global_theme() {
+    look_and_feel "org.kde.breezedark.desktop"
+    plasma_theme "breeze-dark"
+    application_style_edit "Breeze"
+    window_decoration "org.kde.breeze" "Breeze"
+    gtk_theme "Breeze"
+    color_scheme "BreezeDark"
+    icons "breeze-dark"
+    cursor "breeze_cursors"
+    gtk_cursor "breeze_cursors"
+    splash_screen "org.kde.breeze.desktop"
+}
 
-echo "${bold}${purple}##########################################$normal"
-echo "${bold}${purple}## Debian 11 minimal postinstall script ##$normal"
-echo "${bold}${purple}##########################################$normal"
+functions_array=("update_system" "install_firmware" "install_kde_plasma_minimal" "reboot_now" "install_firewall" "install_steam" "install_graphic_software" "install_go" "install_qemu_kvm" "create_bridge" "install_more_software" "disable_wifi" "disable_bluetooth" "enable_airplane_mode" "disable_history" "disable_mouse_acceleration" "configure_dolphin" "change_taskbar" "install_minimal_menu" "change_wallpaper" "install_sddm_theme" "configure_lockscreen" "change_global_theme")
 
-if isRoot
-    then
-        echo "${orange}Dont run this script as root, run as the user whose environment u want to change.$normal"
-        exit
-fi
-################################################################################################
-installSudo
-################################################################################################
-echo -n "${purple}Update system (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    updateSystem
-fi
-################################################################################################
-echo -n "${purple}Install amdgpu firmware (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installFirmware
-fi
-#################################################################################################
-echo -n "${purple}Install KDE-plasma minimal (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installKDEPlasmaMinimal
-fi
-#################################################################################################
-echo -n "${red}Reboot now to start new installed kde / firmware (y/n) $normal?"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-  sudo shutdown -r now
-fi
-################################################################################################
-echo -n "${purple}Install firewall (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installFirewall
-fi
-################################################################################################
-echo -n "${purple}Install steam (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installSteam
-fi
-################################################################################################
-echo -n "${purple}Install graphic software (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installGraphicSoftware
-fi
-################################################################################################
-echo -n "${purple}Install golang (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installGo
-fi
-################################################################################################
-echo -n "${purple}Install qemu/kvm (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installQemuKVM
-fi
-################################################################################################
-echo -n "${purple}Create network bridge for qemu/kvm (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    createBridge
-fi
-################################################################################################
-echo -n "${purple}Install more software (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installMoreSoftware
-fi
-################################################################################################
-echo -n "${purple}Disable wifi (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    disableWifi
-fi
-################################################################################################
-echo -n "${purple}Disable bluetooth (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    disableBluetooth
-fi
-################################################################################################
-echo -n "${purple}Enable airplane mode (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    enableAirplaneMode
-fi
-################################################################################################
-echo -n "${purple}Disable history (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    disableHistory
-fi
-################################################################################################
-echo -n "${purple}Disable mouse acceleration (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    disableMouseAcceleration
-fi
-################################################################################################
-echo -n "${purple}Configure dolphin (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-   configDolphin
-fi
-################################################################################################
-echo -n "${purple}Change taskbar location to left (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    taskbarLocation
-fi
-################################################################################################
-echo -n "${purple}Install minimalmenu (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installMinimalMenu
-fi
-################################################################################################
-echo -n "${purple}Change wallpaper (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    changeWallpaper
-fi
-################################################################################################
-echo -n "${purple}Change global theme (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    changeGlobalTheme
-fi
-################################################################################################
-echo -n "${purple}Install sddm theme (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    installSDDMTheme
-fi
-################################################################################################
-echo -n "${purple}Configure Screenlock (y/n)? $normal"
-read answer
-if [ "$answer" != "${answer#[Yy]}" ] ;then
-    screenlockConf
-fi
-restartUI
+for i in "${functions_array[@]}"; do       # also here
+    formatted1=${i//_/ }
+    formatted2=${formatted1^}
+    echo -n "${purple}${formatted2^} (y/n)? $normal"
+    read answer
+    if [ "$answer" != "${answer#[Yy]}" ] ;then
+        ${i}
+    fi
+done
+
+restart_ui
 lsb_release -s -d
 echo "${green}Done... $normal"
 
