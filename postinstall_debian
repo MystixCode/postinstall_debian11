@@ -330,7 +330,7 @@ if [ "$answer" != "${answer#[Yy]}" ] ;then
     enableAirplaneMode
 fi
 ################################################################################################
-echo -n "${purple}Disable History (y/n)? $normal"
+echo -n "${purple}Disable history (y/n)? $normal"
 read answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
     disableHistory
