@@ -29,7 +29,7 @@ chmod a+x postinstall_debian
  - install_qemu_kvm
  - create_bridge (network bridge for qemu/kvm)
  - install_more_software (keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview)
- - remove_software (kwalletmanager termit xterm)
+ - remove_software (kwalletmanager termit xterm kdeconnect)
  - disable_wifi
  - disable_bluetooth
  - enable_airplane_mode
