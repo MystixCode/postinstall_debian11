@@ -71,7 +71,7 @@ install_more_software() {
     sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview -y
 }
 remove_software() {
-    sudo apt update && sudo apt -qq remove kwalletmanager termit xterm -y && sudo apt autoremove -y
+    sudo apt update && sudo apt -qq remove kwalletmanager termit xterm kdeconnect -y && sudo apt autoremove -y
 }
 disable_wifi() {
     nmcli radio all off
