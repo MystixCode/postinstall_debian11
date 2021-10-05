@@ -5,7 +5,7 @@ Script to install debian 11 minimal with selected software and configs
 
  1. Write debian 11 iso to usb stick:
  - https://www.balena.io/etcher/
- - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/11.0.0-live+nonfree/
+ - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/11.0.0+nonfree/
  2. Boot from usb stick and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
  3. Login as root
  4. Install git
