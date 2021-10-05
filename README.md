@@ -14,12 +14,11 @@ apt install git
 su <yourusername>
 git config --global user.name "Sarah Smith"
 git config --global user.email "sarah.smith@email.com"
-mkdir git
-cd git
+mkdir Git
+cd Git
  ```
  5. Download this repo and start script
 ```bash
-su <yourusername>
 git clone https://github.com/MystixCode/postinstall_debian11.git
 cd postinstall_debian11
 chmod a+x postinstall_debian
@@ -53,3 +52,8 @@ chmod a+x postinstall_debian
  - change_global_theme_light
  - change_wallpaper
  - restart_ui
+
+### Todo
+ - fix broken firefox config
+ - minimalmenu is wrong it should be simple menu and also include it to repo
+ - fix or remove taskbar position
