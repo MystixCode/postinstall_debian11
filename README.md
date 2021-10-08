@@ -14,6 +14,7 @@ apt install git
 su <yourusername>
 git config --global user.name "Sarah Smith"
 git config --global user.email "sarah.smith@email.com"
+cd
 mkdir Git
 cd Git
  ```
