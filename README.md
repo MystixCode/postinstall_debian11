@@ -58,3 +58,5 @@ chmod a+x postinstall_debian
  - fix broken firefox config
  - minimalmenu is wrong it should be simple menu and also include it to repo
  - fix or remove taskbar position
+ - change the bridge for vms to virsh command instead of that brctl stuff and add nested
+   see: https://github.com/bitcubix/arch/pull/14
