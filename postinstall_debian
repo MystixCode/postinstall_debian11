@@ -69,7 +69,9 @@ create_bridge() {
 }
 install_firefox() {
     sudo apt -qq install firefox-esr webext-ublock-origin-firefox
-    firefox-esr
+    firefox-esr&
+    sleep 5
+    pkill -f firefox
 }
 install_more_software() {
     sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview -y
