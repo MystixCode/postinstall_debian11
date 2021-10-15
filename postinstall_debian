@@ -101,26 +101,24 @@ configure_dolphin() {
     kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPathInTitlebar true
     kwriteconfig5 --file ~/.config/dolphinrc --group Search --key Location Everywhere
 }
-conf_ff() { #conf_ff "key" "value"
+configure_firefox() { 
     prefix="/home/$USER/.mozilla/firefox"
     suffix=".default-esr/"
-    test=""
+    path=""
     for f in "${prefix}"/*"${suffix}"; do
-        test="$f""prefs.js"
+        path="$f""user.js"
     done
-    sed -i 's/user_pref("'$1'",.*);/user_pref("'$1'", '$2');/' $test
-    echo "$test $1  $2"
-}
-configure_firefox() {
-    conf_ff "browser.contentblocking.category" "custom"
-    conf_ff "browser.privatebrowsing.autostart" true
-    conf_ff "browser.shell.checkDefaultBrowser" true
-    conf_ff "network.cookie.cookieBehavior" 1
-    conf_ff "network.cookie.lifetimePolicy" 2
-    conf_ff "privacy.donottrackheader.enabled" true
-    conf_ff "privacy.trackingprotection.enabled" true
-    conf_ff "privacy.trackingprotection.socialtracking.enabled" true
-    conf_ff "signon.rememberSignons" false
+    echo $path
+    echo "user_pref(\"browser.contentblocking.category\",custom);
+    user_pref(\"browser.privatebrowsing.autostart\", true);
+    user_pref(\"browser.shell.checkDefaultBrowser\", true);
+    user_pref(\"network.cookie.cookieBehavior\",1);
+    user_pref(\"network.cookie.lifetimePolicy\",2);
+    user_pref(\"privacy.donottrackheader.enabled\", true);
+    user_pref(\"privacy.trackingprotection.enabled\", true);
+    user_pref(\"privacy.trackingprotection.socialtracking.enabled\", true);
+    user_pref(\"signon.rememberSignons\", false);
+    " | sudo tee $path
 }
 change_taskbar() {
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --key formfactor 3
