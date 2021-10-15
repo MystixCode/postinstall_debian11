@@ -67,6 +67,10 @@ create_bridge() {
   sudo brctl addif br0 $iface
   sudo dhclient br0
 }
+install_firefox() {
+    sudo apt -qq install firefox-esr webext-ublock-origin-firefox
+	firefox-esr
+}
 install_more_software() {
     sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview -y
 }
