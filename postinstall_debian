@@ -239,10 +239,10 @@ helpmenu(){
     echo "-h        --help                    Display Help"
     echo ""
     echo "${orange}Options:$normal"
-    echo -e "update_system\ninstall_firmware\ninstall_kde_plasma_minimal\nreboot_now\ninstall_firewall\ninstall_steam\ninstall_graphic_software\ninstall_go\ninstall_qemu_kvm\ncreate_bridge\ninstall_more_software\nremove_software\ndisable_wifi\ndisable_bluetooth\nenable_airplane_mode\ndisable_history\ndisable_mouse_acceleration\nconfigure_dolphin\nconfigure_firefox\nchange_taskbar\ninstall_minimal_menu\nconfigure_lockscreen\nchange_global_theme_dark\nchange_global_theme_light\nchange_wallpaper\nrestart_ui"
+    echo -e "update_system\ninstall_firmware\ninstall_kde_plasma_minimal\nreboot_now\ninstall_firewall\ninstall_steam\ninstall_graphic_software\ninstall_go\ninstall_qemu_kvm\ncreate_bridge\ninstall_firefox\ninstall_more_software\nremove_software\ndisable_wifi\ndisable_bluetooth\nenable_airplane_mode\ndisable_history\ndisable_mouse_acceleration\nconfigure_dolphin\nconfigure_firefox\nchange_taskbar\ninstall_minimal_menu\nconfigure_lockscreen\nchange_global_theme_dark\nchange_global_theme_light\nchange_wallpaper\nrestart_ui"
     exit
 }
-functions_array=(update_system install_firmware install_kde_plasma_minimal reboot_now install_firewall install_steam install_graphic_software install_go install_qemu_kvm create_bridge install_more_software remove_software disable_wifi disable_bluetooth enable_airplane_mode disable_history disable_mouse_acceleration configure_dolphin configure_firefox change_taskbar install_minimal_menu configure_lockscreen change_global_theme_dark change_global_theme_light change_wallpaper restart_ui)
+functions_array=(update_system install_firmware install_kde_plasma_minimal reboot_now install_firewall install_steam install_graphic_software install_go install_qemu_kvm create_bridge install_firefox install_more_software remove_software disable_wifi disable_bluetooth enable_airplane_mode disable_history disable_mouse_acceleration configure_dolphin configure_firefox change_taskbar install_minimal_menu configure_lockscreen change_global_theme_dark change_global_theme_light change_wallpaper restart_ui)
 if [[ " $# " -ne 0 ]]; then
     #echo "${orange}Total Arguments: $# $normal"
     for i in $@
