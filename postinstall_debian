@@ -67,6 +67,12 @@ create_bridge() {
   sudo brctl addif br0 $iface
   sudo dhclient br0
 }
+install_firefox() {
+    sudo apt -qq install firefox-esr webext-ublock-origin-firefox
+    firefox-esr&
+    sleep 5
+    pkill -f firefox
+}
 install_more_software() {
     sudo apt -qq install keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview -y
 }
@@ -95,26 +101,24 @@ configure_dolphin() {
     kwriteconfig5 --file ~/.config/dolphinrc --group General --key ShowFullPathInTitlebar true
     kwriteconfig5 --file ~/.config/dolphinrc --group Search --key Location Everywhere
 }
-conf_ff() { #conf_ff "key" "value"
+configure_firefox() { 
     prefix="/home/$USER/.mozilla/firefox"
     suffix=".default-esr/"
-    test=""
+    path=""
     for f in "${prefix}"/*"${suffix}"; do
-        test="$f""prefs.js"
+        path="$f""user.js"
     done
-    sed -i 's/user_pref("'$1'",.*);/user_pref("'$1'", '$2');/' $test
-    echo "$test $1  $2"
-}
-configure_firefox() {
-    conf_ff "browser.contentblocking.category" "custom"
-    conf_ff "browser.privatebrowsing.autostart" true
-    conf_ff "browser.shell.checkDefaultBrowser" true
-    conf_ff "network.cookie.cookieBehavior" 1
-    conf_ff "network.cookie.lifetimePolicy" 2
-    conf_ff "privacy.donottrackheader.enabled" true
-    conf_ff "privacy.trackingprotection.enabled" true
-    conf_ff "privacy.trackingprotection.socialtracking.enabled" true
-    conf_ff "signon.rememberSignons" false
+    echo $path
+    echo "user_pref(\"browser.contentblocking.category\",custom);
+    user_pref(\"browser.privatebrowsing.autostart\", true);
+    user_pref(\"browser.shell.checkDefaultBrowser\", true);
+    user_pref(\"network.cookie.cookieBehavior\",1);
+    user_pref(\"network.cookie.lifetimePolicy\",2);
+    user_pref(\"privacy.donottrackheader.enabled\", true);
+    user_pref(\"privacy.trackingprotection.enabled\", true);
+    user_pref(\"privacy.trackingprotection.socialtracking.enabled\", true);
+    user_pref(\"signon.rememberSignons\", false);
+    " | sudo tee $path
 }
 change_taskbar() {
     kwriteconfig5 --file ~/.config/plasma-org.kde.plasma.desktop-appletsrc --group Containments --group 3 --key formfactor 3
@@ -235,10 +239,10 @@ helpmenu(){
     echo "-h        --help                    Display Help"
     echo ""
     echo "${orange}Options:$normal"
-    echo -e "update_system\ninstall_firmware\ninstall_kde_plasma_minimal\nreboot_now\ninstall_firewall\ninstall_steam\ninstall_graphic_software\ninstall_go\ninstall_qemu_kvm\ncreate_bridge\ninstall_more_software\nremove_software\ndisable_wifi\ndisable_bluetooth\nenable_airplane_mode\ndisable_history\ndisable_mouse_acceleration\nconfigure_dolphin\nconfigure_firefox\nchange_taskbar\ninstall_minimal_menu\nconfigure_lockscreen\nchange_global_theme_dark\nchange_global_theme_light\nchange_wallpaper\nrestart_ui"
+    echo -e "update_system\ninstall_firmware\ninstall_kde_plasma_minimal\nreboot_now\ninstall_firewall\ninstall_steam\ninstall_graphic_software\ninstall_go\ninstall_qemu_kvm\ncreate_bridge\ninstall_firefox\ninstall_more_software\nremove_software\ndisable_wifi\ndisable_bluetooth\nenable_airplane_mode\ndisable_history\ndisable_mouse_acceleration\nconfigure_dolphin\nconfigure_firefox\nchange_taskbar\ninstall_minimal_menu\nconfigure_lockscreen\nchange_global_theme_dark\nchange_global_theme_light\nchange_wallpaper\nrestart_ui"
     exit
 }
-functions_array=(update_system install_firmware install_kde_plasma_minimal reboot_now install_firewall install_steam install_graphic_software install_go install_qemu_kvm create_bridge install_more_software remove_software disable_wifi disable_bluetooth enable_airplane_mode disable_history disable_mouse_acceleration configure_dolphin configure_firefox change_taskbar install_minimal_menu configure_lockscreen change_global_theme_dark change_global_theme_light change_wallpaper restart_ui)
+functions_array=(update_system install_firmware install_kde_plasma_minimal reboot_now install_firewall install_steam install_graphic_software install_go install_qemu_kvm create_bridge install_firefox install_more_software remove_software disable_wifi disable_bluetooth enable_airplane_mode disable_history disable_mouse_acceleration configure_dolphin configure_firefox change_taskbar install_minimal_menu configure_lockscreen change_global_theme_dark change_global_theme_light change_wallpaper restart_ui)
 if [[ " $# " -ne 0 ]]; then
     #echo "${orange}Total Arguments: $# $normal"
     for i in $@
