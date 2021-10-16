@@ -37,6 +37,8 @@ install_firewall() {
     sudo ufw enable
 }
 install_steam() {
+	sudo sed -i 's#deb http://deb.debian.org/debian/ bullseye main.*#deb http://deb.debian.org/debian/ bullseye main contrib non-free#g' /etc/apt/sources.list
+	sudo sed -i 's#deb-src http://deb.debian.org/debian/ bullseye main.*#deb-src http://deb.debian.org/debian/ bullseye main contrib non-free#g' /etc/apt/sources.list
     sudo dpkg --add-architecture i386
     sudo apt -qq update
     sudo apt -qq install steam -y
