@@ -68,7 +68,7 @@ create_bridge() {
   sudo dhclient br0
 }
 install_firefox() {
-    sudo apt -qq install firefox-esr webext-ublock-origin-firefox
+    sudo apt -qq install firefox-esr webext-ublock-origin-firefox -y
     firefox-esr&
     sleep 5
     pkill -f firefox
