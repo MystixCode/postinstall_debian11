@@ -3,12 +3,14 @@ Script to install debian 11 minimal with selected software and configs
 
 ### HowTo
 
- 1. Write debian 11 iso to usb stick:
+ 1. Download Debian 11
+ - https://www.debian.org/download
+ 2. Write debian 11 iso to usb stick:
  - https://www.balena.io/etcher/
  - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/11.0.0+nonfree/
- 2. Boot from usb stick and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
- 3. Login as root
- 4. Install git
+ 3. Boot from usb stick and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
+ 4. Login as root
+ 5. Install git
  ```bash
 apt install git
 su <yourusername>
@@ -37,7 +39,8 @@ chmod a+x postinstall_debian
  - install_go
  - install_qemu_kvm
  - create_bridge (network bridge for qemu/kvm)
- - install_more_software (keepass2 thunderbird obs-studio baobab nethogs webext-ublock-origin-firefox ark kcalc kde-spectacle okular gwenview)
+ - install_firefox (firefox-esr webext-ublock-origin-firefox)
+ - install_more_software (keepass2 thunderbird obs-studio baobab nethogs ark kcalc kde-spectacle okular gwenview)
  - remove_software (kwalletmanager termit xterm kdeconnect)
  - disable_wifi
  - disable_bluetooth
