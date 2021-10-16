@@ -23,7 +23,7 @@ cd
 mkdir Git
 cd Git
  ```
- 5. Download this repo and start script
+ 6. Download this repo and start script
 ```bash
 git clone https://github.com/MystixCode/postinstall_debian11.git
 cd postinstall_debian11
