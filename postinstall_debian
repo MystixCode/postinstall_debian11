@@ -37,8 +37,8 @@ install_firewall() {
     sudo ufw enable
 }
 install_steam() {
-	sudo sed -i 's#deb http://deb.debian.org/debian/ bullseye main.*#deb http://deb.debian.org/debian/ bullseye main contrib non-free#g' /etc/apt/sources.list
-	sudo sed -i 's#deb-src http://deb.debian.org/debian/ bullseye main.*#deb-src http://deb.debian.org/debian/ bullseye main contrib non-free#g' /etc/apt/sources.list
+    sudo sed -i 's#deb http://deb.debian.org/debian/ bullseye main.*#deb http://deb.debian.org/debian/ bullseye main contrib non-free#g' /etc/apt/sources.list
+    sudo sed -i 's#deb-src http://deb.debian.org/debian/ bullseye main.*#deb-src http://deb.debian.org/debian/ bullseye main contrib non-free#g' /etc/apt/sources.list
     sudo dpkg --add-architecture i386
     sudo apt -qq update
     sudo apt -qq install steam -y
@@ -206,8 +206,6 @@ change_global_theme_light() {
     splash_screen "org.kde.breeze.desktop"
 }
 change_wallpaper() {
-    wget -O ~/Downloads/wallpaper_dark.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_dark.jpg
-    wget -O ~/Downloads/wallpaper_login.jpg https://raw.githubusercontent.com/MystixCode/postinstall_debian11/main/img/wallpaper_login.jpg
     echo "${orange}Choose standard wallpaper$normal"
     wallpaper=$(zenity --file-selection --title="Choose standard wallpaper")
     echo "standard wallpaper:   $wallpaper"
