@@ -4,7 +4,7 @@ Script to install debian 11 minimal with selected software and configs
 ### HowTo
 
  1. Download Debian 11
- - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/11.1.0+nonfree/amd64/iso-cd/firmware-11.1.0-amd64-netinst.iso
+ - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/11.1.0+nonfree/multi-arch/iso-cd/firmware-11.1.0-amd64-i386-netinst.iso
  2. Write debian 11 iso to usb stick using either Balena Etcher or the DD command (replace $iso_file with your ISO file and $usb_drive with your usb drive):
  - https://www.balena.io/etcher/
 ```shell
@@ -41,7 +41,6 @@ chmod a+x postinstall_debian
  - install_graphic_software (gimp krita blender)
  - install_go
  - install_qemu_kvm
- - create_bridge (network bridge for qemu/kvm)
  - install_firefox (firefox-esr webext-ublock-origin-firefox)
  - install_more_software (keepass2 thunderbird obs-studio baobab nethogs ark kcalc kde-spectacle okular gwenview)
  - remove_software (kwalletmanager termit xterm kdeconnect)
@@ -52,13 +51,9 @@ chmod a+x postinstall_debian
  - disable_mouse_acceleration
  - configure_dolphin
  - configure_firefox
- - change_taskbar
  - install_minimal_menu
  - configure_lockscreen (Timeout 10min)
  - change_global_theme_dark
  - change_global_theme_light
  - change_wallpaper
  - restart_ui
-
-### Todo
- - fix or remove taskbar position
