@@ -5,11 +5,11 @@ Script to install debian 11 minimal with selected software and configs
 
  1. Download Debian 11
  - https://cdimage.debian.org/cdimage/unofficial/non-free/cd-including-firmware/11.1.0+nonfree/multi-arch/iso-cd/firmware-11.1.0-amd64-i386-netinst.iso
- 2. Write debian 11 iso to usb stick using either Balena Etcher or the DD command (replace $iso_file with your ISO file and $usb_drive with your usb drive):
+ 2. Write debian 11 iso to usb stick using either Balena Etcher or the DD command (replace /dev/sda with your usb device!):
  - https://www.balena.io/etcher/
 ```shell
 lsblk -f
-dd bs=4M if=$iso_file of=$usb_drive oflag=sync status=progress
+sudo dd bs=4M if=$HOME/Downloads/firmware-11.1.0-amd64-i386-netinst.iso of=/dev/sda oflag=sync status=progress
 ```
  3. Boot from usb stick and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
  4. Login as root
