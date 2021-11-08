@@ -11,7 +11,7 @@ Script to install debian 11 minimal with selected software and configs
 lsblk -f
 sudo dd bs=4M if=$HOME/Downloads/firmware-11.1.0-amd64-i386-netinst.iso of=/dev/sda oflag=sync status=progress
 ```
- 3. Boot from usb stick and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
+ 3. Boot from usb stick (use a usb2 port usb3 doesnt seem to work) and install debian 11 minimal without desktop<br><img src="/img/minimal.png" width="50%" height="50%">
  4. Login as root
  5. Install git
  ```bash
